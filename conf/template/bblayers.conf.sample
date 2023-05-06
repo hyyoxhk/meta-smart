@@ -1,0 +1,42 @@
+# This file is based on meta-st-openstlinux/conf/template/bblayers.conf.sample
+LCONF_VERSION = "7"
+
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+OEROOT := "${@os.path.abspath(os.path.dirname(d.getVar('FILE')) + '/../..')}"
+
+POKYLAYER  = "${OEROOT}/layers/poky/meta"
+
+BASELAYERS ?= " \
+    ${OEROOT}/layers/meta-openembedded/meta-gnome \
+    ${OEROOT}/layers/meta-openembedded/meta-initramfs \
+    ${OEROOT}/layers/meta-openembedded/meta-multimedia \
+    ${OEROOT}/layers/meta-openembedded/meta-networking \
+    ${OEROOT}/layers/meta-openembedded/meta-webserver \
+    ${OEROOT}/layers/meta-openembedded/meta-filesystems \
+    ${OEROOT}/layers/meta-openembedded/meta-perl \
+    ${OEROOT}/layers/meta-openembedded/meta-oe \
+    ${OEROOT}/layers/meta-openembedded/meta-python \
+"
+
+SWUPDATELAYER = "${OEROOT}/layers/meta-swupdate"
+
+QT5LAYER ?= "${@'${OEROOT}/layers/meta-qt5' if os.path.isfile('${OEROOT}/layers/meta-qt5/conf/layer.conf') else ''}"
+
+EXYNOSLAYERS ?= "${@'${OEROOT}/layers/meta-board/meta-exynos' if os.path.isfile('${OEROOT}/layers/meta-board/meta-exynos/conf/layer.conf') else ''}"
+
+BSPLAYERS ?= " \
+    ${EXYNOSLAYERS} \
+"
+
+COMPONENTLAYER = "${@'${OEROOT}/layers/meta-board/meta-smart' if os.path.isfile('${OEROOT}/layers/meta-board/meta-smart/conf/layer.conf') else ''}"
+
+# add BSP layer
+BBLAYERS += " \
+    ${POKYLAYER} \
+    ${BASELAYERS} \
+    ${SWUPDATELAYER} \
+    ${QT5LAYER} \
+    ${BSPLAYERS} \
+    ${COMPONENTLAYER} \
+"

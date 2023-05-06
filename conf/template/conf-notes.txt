@@ -1,0 +1,9 @@
+Available images for smart layers are:
+
+  - Usually smart images:
+      smart-image-small       -   small image for gateway
+      smart-image-standard         -   standard image with graphics support
+
+  - Unusually smart images:
+      - Supported images:
+          smart-image-factory   -   factory image for burning

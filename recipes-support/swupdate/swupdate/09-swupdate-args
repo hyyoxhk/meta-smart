@@ -1,0 +1,25 @@
+root_dev=`findmnt / -o source -n`
+root_current=${root_dev#\/dev/}
+disk=`echo /sys/block/*/"${root_current}" | cut -d "/" -f 4`
+user_part_num=`ls /sys/block/${disk} | grep "${disk}" | grep -v boot | wc -l`
+root_b_part_num=`expr $user_part_num - 1`
+
+padding=""
+case $disk in
+    mmcblk*)
+        padding="p"
+        ;;
+    sd*)
+        padding=""
+        ;;
+esac
+
+root_b="${disk}${padding}${root_b_part_num}"
+
+if [ $root_current == $root_b ];then
+	selection="-e stable,copy1"
+else
+	selection="-e stable,copy2"
+fi
+
+SWUPDATE_EXTRA_ARGS="${selection} -f /etc/swupdate.cfg"
