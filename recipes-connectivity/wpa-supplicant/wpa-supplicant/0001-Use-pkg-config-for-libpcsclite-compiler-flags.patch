@@ -1,0 +1,29 @@
+From e5b860e4539a69c2c650d8166e5dccfc6a558684 Mon Sep 17 00:00:00 2001
+From: He Yong <hyyoxhk@163.com>
+Date: Wed, 7 Dec 2022 22:12:16 +0800
+Subject: [PATCH] Use pkg-config for libpcsclite compiler flags
+
+Using pkg-config for libpcsclite can provide more accurate compiler flags
+
+Signed-off-by: He Yong <hyyoxhk@163.com>
+---
+ wpa_supplicant/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
+index 26b0c93..1f8448f 100644
+--- a/wpa_supplicant/Makefile
++++ b/wpa_supplicant/Makefile
+@@ -1011,7 +1011,8 @@ endif
+ 
+ ifdef CONFIG_PCSC
+ # PC/SC interface for smartcards (USIM, GSM SIM)
+-CFLAGS += -DPCSC_FUNCS -I/usr/include/PCSC
++CFLAGS += -DPCSC_FUNCS
++CFLAGS += $(shell $(PKG_CONFIG) --cflags libpcsclite)
+ OBJS += ../src/utils/pcsc_funcs.o
+ ifdef CONFIG_NATIVE_WINDOWS
+ #Once MinGW gets support for WinScard, -lwinscard could be used instead of the
+-- 
+2.34.1
+
