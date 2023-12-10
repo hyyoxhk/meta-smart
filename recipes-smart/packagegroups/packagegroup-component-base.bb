@@ -3,7 +3,7 @@
 # Copyright (C) 2023 He Yong <hyyoxhk@163.com>
 #
 
-SUMMARY = "components core"
+SUMMARY = "components base"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
