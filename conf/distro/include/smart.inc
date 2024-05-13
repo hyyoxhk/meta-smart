@@ -69,6 +69,16 @@ DISTRO_FEATURES += "pulseaudio"
 DISTRO_FEATURES += "polkit"
 INIT_MANAGER = "systemd"
 
+# =========================================================================
+# Preferred version
+# =========================================================================
+
+PREFERRED_VERSION_libdrm ?= "2.4.115"
+PREFERRED_VERSION_mtdev ?= "1.1.6"
+PREFERRED_VERSION_libinput ?= "1.22.1"
+PREFERRED_VERSION_wayland-protocols ?= "1.31"
+PREFERRED_VERSION_wayland ?= "1.21.0"
+
 # X11 addons
 DISTRO_EXTRA_RDEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xf86-video-modesetting', '', d)} "
 
