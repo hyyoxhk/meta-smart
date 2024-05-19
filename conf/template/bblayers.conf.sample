@@ -25,8 +25,11 @@ QT5LAYER ?= "${@'${OEROOT}/layers/meta-qt5' if os.path.isfile('${OEROOT}/layers/
 
 EXYNOSLAYERS ?= "${@'${OEROOT}/layers/meta-board/meta-exynos' if os.path.isfile('${OEROOT}/layers/meta-board/meta-exynos/conf/layer.conf') else ''}"
 
+ROCKCHIPLAYER += "${@'${OEROOT}/layers/meta-board/meta-rockchip' if os.path.isfile('${OEROOT}/layers/meta-board/meta-rockchip/conf/layer.conf') else ''}"
+
 BSPLAYERS ?= " \
     ${EXYNOSLAYERS} \
+    ${ROCKCHIPLAYER} \
 "
 
 COMPONENTLAYER = "${@'${OEROOT}/layers/meta-board/meta-smart' if os.path.isfile('${OEROOT}/layers/meta-board/meta-smart/conf/layer.conf') else ''}"
