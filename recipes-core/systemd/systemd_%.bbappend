@@ -5,7 +5,7 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-PACKAGECONFIG:append = " firstboot"
+PACKAGECONFIG:append = " firstboot xdg-autostart"
 
 do_install:append() {
     # Remove this service useless for our needs
