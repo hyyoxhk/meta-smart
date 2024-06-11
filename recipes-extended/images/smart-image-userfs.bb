@@ -14,6 +14,8 @@ IMAGE_NAME_SUFFIX = ".userfs"
 
 IMAGE_PARTITION_MOUNTPOINT = "/usr/local"
 
+EXTRA_IMAGECMD:ext4 = "-i 4096 -L userfs -O ^metadata_csum,^dir_index"
+
 # Reset image feature
 IMAGE_FEATURE = ""
 
