@@ -5,6 +5,9 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+PACKAGECONFIG_FONTS = "fontconfig"
+PACKAGECONFIG:append = " sql-sqlite"
+
 SRC_URI += "file://qt-wayland.sh"
 
 do_install:append () {
