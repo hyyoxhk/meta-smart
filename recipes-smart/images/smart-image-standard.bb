@@ -6,6 +6,9 @@
 SUMMARY = "Smart image standard"
 LICENSE = "MIT"
 
+include recipes-smart/images/smart-image.inc
+inherit core-image
+
 IMAGE_FEATURES += " \
     splash \
     package-management \
@@ -14,10 +17,7 @@ IMAGE_FEATURES += " \
     weston \
 "
 
-inherit core-image
-
 CORE_IMAGE_EXTRA_INSTALL += " \
-    packagegroup-component-base-core \
     packagegroup-component-base-core \
     packagegroup-component-display \
 "

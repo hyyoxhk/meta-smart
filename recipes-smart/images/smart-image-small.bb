@@ -6,13 +6,14 @@
 SUMMARY = "Smart image small"
 LICENSE = "MIT"
 
+include recipes-smart/images/smart-image.inc
+inherit core-image
+
 IMAGE_FEATURES += " \
     package-management \
     ssh-server-dropbear \
     hwcodecs \
 "
-
-inherit core-image
 
 CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-component-base-core \
