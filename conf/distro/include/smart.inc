@@ -62,6 +62,9 @@ DISTRO_FEATURES_FILTER_NATIVESDK = "wayland"
 # Disabling pulseaudio
 DISTRO_FEATURES += "pulseaudio"
 
+# add support of KDE (since OE thud version)
+DISTRO_FEATURES += " kde"
+
 # add support of splashscreen
 #DISTRO_FEATURES += "splashscreen"
 
