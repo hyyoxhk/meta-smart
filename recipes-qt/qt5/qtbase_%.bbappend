@@ -5,6 +5,8 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+PACKAGECONFIG:append = " glib xkbcommon"
+
 SRC_URI += "file://qt-wayland.sh"
 
 do_install:append () {
