@@ -31,8 +31,6 @@ SDK_VERSION[vardepsexclude] = "DATE"
 SDK_NAME = "${DISTRO}-${SDK_ARCH}"
 SDKPATHINSTALL = "/opt/${DISTRO}"
 
-IMAGE_LINGUAS = "en-us"
-
 # DISTRO features
 # =========================================================================
 DISTRO_FEATURES  = "alsa"
