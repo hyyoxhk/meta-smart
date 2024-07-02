@@ -280,8 +280,9 @@ CONF_VERSION = "1"
 # NOTE: If removing en_US.UTF-8 you will also need to uncomment, and set
 # appropriate value for IMAGE_LINGUAS.
 # WARNING: this may break localisation!
-GLIBC_GENERATE_LOCALES = "en_GB.UTF-8 en_US.UTF-8"
-IMAGE_LINGUAS ?= "en-gb"
+GLIBC_GENERATE_LOCALES = "en_US.UTF-8 zh_CN.UTF-8 "
+IMAGE_LINGUAS = "en-us zh-cn"
+LOCALE_UTF8_ONLY = "1"
 
 # Additional image generation features
 #
@@ -301,3 +302,5 @@ BUILDHISTORY_COMMIT = "1"
 
 # Clean up working directory after build
 INHERIT += "rm_work"
+
+LICENSE_FLAGS_ACCEPTED += "commercial"
