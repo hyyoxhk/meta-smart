@@ -7,7 +7,7 @@ SRC_URI += " \
     file://NetworkManager.service \
 "
 
-PACKAGECONFIG:append = " modemmanager nmtui"
+PACKAGECONFIG:append = " ppp nmtui"
 
 do_install:append() {
     install -m 644 ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager
