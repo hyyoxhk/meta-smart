@@ -14,7 +14,6 @@ PACKAGES = "${PN}-core ${PN}-extra"
 SUMMARY:${PN}-core = "Core basic tools and libraries"
 RDEPENDS:${PN}-core = " \
     at \
-    dash \
     bash \
     coreutils \
     cpio \
