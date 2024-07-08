@@ -18,4 +18,9 @@ RDEPENDS:${PN} = " \
     weston \
     weston-init \
     wayland-utils \
+    wlroots \
+    fcitx5 \
+    fcitx5-qt \
+    fcitx5-chinese-addons \
+    fcitx5-configtool \
 "
