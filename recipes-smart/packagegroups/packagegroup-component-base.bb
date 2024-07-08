@@ -9,10 +9,10 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
-PACKAGES = "${PN}-core ${PN}-extra"
+PACKAGES = "${PN}"
 # apt-conf
-SUMMARY:${PN}-core = "Core basic tools and libraries"
-RDEPENDS:${PN}-core = " \
+SUMMARY:${PN} = "basic tools and libraries"
+RDEPENDS:${PN} = " \
     at \
     bash \
     coreutils \
@@ -69,23 +69,4 @@ RDEPENDS:${PN}-core = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio-server', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio-misc', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio-module-combine-sink', '', d)} \
-"
-
-SUMMARY:${PN}-extra = "extra tools"
-RDEPENDS:${PN}-extra = " \
-    util-linux-lscpu \
-    util-linux-blkid \
-    memtester \
-    i2c-tools \
-    mmc-utils \
-    usbutils \
-    libgpiod-tools \
-    libiio-iiod \
-    libiio-tests \
-    openssh-sftp     \
-    openssh-sftp-server \
-    iperf2 \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'alsa', 'alsa-state', '', d)} \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'alsa', 'alsa-utils-amixer', '', d)} \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'alsa', 'alsa-utils-aplay', '', d)} \
 "

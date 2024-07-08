@@ -18,7 +18,7 @@ IMAGE_FEATURES += " \
 "
 
 CORE_IMAGE_EXTRA_INSTALL += " \
-    packagegroup-component-base-core \
+    packagegroup-component-base \
     packagegroup-component-display \
     packagegroup-component-qt-base \
     packagegroup-component-qt-fonts \
