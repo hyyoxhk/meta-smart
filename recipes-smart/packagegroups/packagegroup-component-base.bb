@@ -38,6 +38,7 @@ RDEPENDS:${PN} = " \
     nspr \
     nss \
     \
+    sudo \
     firmwared \
     db \
     sqlite3 \
