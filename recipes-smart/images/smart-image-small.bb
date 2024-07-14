@@ -9,6 +9,8 @@ LICENSE = "MIT"
 include recipes-smart/images/smart-image.inc
 inherit core-image
 
+SYSTEMD_DEFAULT_TARGET = "multi-user.target"
+
 IMAGE_FEATURES += " \
     package-management \
     ssh-server-dropbear \
