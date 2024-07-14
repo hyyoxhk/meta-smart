@@ -16,7 +16,6 @@ PACKAGES = "${PN}"
 SUMMARY:${PN} = "about display"
 RDEPENDS:${PN} = " \
     weston \
-    weston-init \
     wayland-utils \
     wlroots \
     fcitx5 \
