@@ -96,7 +96,7 @@ PACKAGECONFIG[image-jpeg] = "-Dimage-jpeg=true,-Dimage-jpeg=false, jpeg"
 PACKAGECONFIG[launcher-libseat] = "-Dlauncher-libseat=true,-Dlauncher-libseat=false,seatd"
 PACKAGECONFIG[launcher-logind] = "-Dlauncher-logind=true,-Dlauncher-logind=false,systemd dbus"
 
-do_install:append() {
+do_install:append () {
 	# Weston doesn't need the .la files to load modules, so wipe them
 	rm -f ${D}/${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.la
 
@@ -137,8 +137,87 @@ FILES:${PN}-xwayland = "${libdir}/libweston-${WESTON_MAJOR_VERSION}/xwayland.so"
 RDEPENDS:${PN}-xwayland += "xwayland"
 
 RDEPENDS:${PN} += "xkeyboard-config"
-RRECOMMENDS:${PN} = "weston-init liberation-fonts"
 RRECOMMENDS:${PN}-dev += "wayland-protocols"
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = "--system weston-launch"
+
+########### End of OE-core copy ###########
+
+########### my overrides ################
+
+DEFAULT_PREFERENCE = "-1"
+
+SRC_URI:append = " \
+	file://init \
+	file://weston.env \
+	file://weston.ini \
+	file://weston.service \
+	file://weston.socket \
+	file://weston-socket.sh \
+	file://weston-autologin \
+	file://weston-start"
+
+do_install:append () {
+	# Install weston-start script
+	if [ "${VIRTUAL-RUNTIME_init_manager}" != "systemd" ]; then
+		install -Dm755 ${WORKDIR}/weston-start ${D}${bindir}/weston-start
+		sed -i 's,@DATADIR@,${datadir},g' ${D}${bindir}/weston-start
+		sed -i 's,@LOCALSTATEDIR@,${localstatedir},g' ${D}${bindir}/weston-start
+		install -Dm755 ${WORKDIR}/init ${D}/${sysconfdir}/init.d/weston
+		sed -i 's#ROOTHOME#${ROOT_HOME}#' ${D}/${sysconfdir}/init.d/weston
+	fi
+
+	# Install Weston systemd service
+	if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
+		install -D -p -m0644 ${WORKDIR}/weston.service ${D}${systemd_system_unitdir}/weston.service
+		install -D -p -m0644 ${WORKDIR}/weston.socket ${D}${systemd_system_unitdir}/weston.socket
+		install -D -p -m0644 ${WORKDIR}/weston-socket.sh ${D}${sysconfdir}/profile.d/weston-socket.sh
+		sed -i -e s:/etc:${sysconfdir}:g \
+			-e s:/usr/bin:${bindir}:g \
+			-e s:/var:${localstatedir}:g \
+			${D}${systemd_system_unitdir}/weston.service
+	fi
+
+	if [ "${@bb.utils.filter('DISTRO_FEATURES', 'pam', d)}" ]; then
+		install -D -p -m0644 ${WORKDIR}/weston-autologin ${D}${sysconfdir}/pam.d/weston-autologin
+	fi
+
+	install -D -p -m0644 ${WORKDIR}/weston.ini ${D}${sysconfdir}/xdg/weston/weston.ini
+	install -Dm644 ${WORKDIR}/weston.env ${D}${sysconfdir}/default/weston
+
+	if [ -n "${DEFAULTBACKEND}" ]; then
+		sed -i -e "/^\[core\]/a backend=${DEFAULTBACKEND}-backend.so" ${D}${sysconfdir}/xdg/weston/weston.ini
+	fi
+
+	if [ "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'yes', 'no', d)}" = "yes" ]; then
+		sed -i -e "/^\[core\]/a xwayland=true" ${D}${sysconfdir}/xdg/weston/weston.ini
+	fi
+
+	if [ "${@bb.utils.contains('PACKAGECONFIG', 'no-idle-timeout', 'yes', 'no', d)}" = "yes" ]; then
+		sed -i -e "/^\[core\]/a idle-time=0" ${D}${sysconfdir}/xdg/weston/weston.ini
+	fi
+
+	if [ "${@bb.utils.contains('PACKAGECONFIG', 'use-pixman', 'yes', 'no', d)}" = "yes" ]; then
+		sed -i -e "/^\[core\]/a use-pixman=true" ${D}${sysconfdir}/xdg/weston/weston.ini
+	fi
+}
+
+INHIBIT_UPDATERCD_BBCLASS = "${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', 'systemd', '1', '', d)}"
+
+inherit systemd
+
+FILES:${PN} += " \
+    ${sysconfdir}/xdg/weston/weston.ini \
+    ${sysconfdir}/profile.d/weston-socket.sh \
+    ${systemd_system_unitdir}/weston.service \
+    ${systemd_system_unitdir}/weston.socket \
+    ${sysconfdir}/default/weston \
+    ${sysconfdir}/pam.d/ \
+    "
+
+CONFFILES:${PN} += "${sysconfdir}/xdg/weston/weston.ini ${sysconfdir}/default/weston"
+
+SYSTEMD_SERVICE:${PN} = "weston.service weston.socket"
+
+########### End of my overrides #########

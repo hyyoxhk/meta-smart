@@ -4,9 +4,9 @@ rootfs_reversion () {
 }
 ROOTFS_POSTPROCESS_COMMAND:append = "rootfs_reversion;"
 
-zap_empty_weston_password () {
+zap_empty_smart_password () {
     if [ -e ${IMAGE_ROOTFS}/etc/shadow ]; then
-        sed -i 's%^weston:!:%weston::%' ${IMAGE_ROOTFS}/etc/shadow
+        sed -i 's%^smart:!:%smart::%' ${IMAGE_ROOTFS}/etc/shadow
     fi
 }
-ROOTFS_POSTPROCESS_COMMAND:append = "zap_empty_weston_password;"
+ROOTFS_POSTPROCESS_COMMAND:append = "zap_empty_smart_password;"
