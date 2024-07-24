@@ -6,7 +6,6 @@
 SUMMARY = "Smart image standard"
 LICENSE = "MIT"
 
-include recipes-smart/images/smart-image.inc
 inherit core-image populate_sdk_qt5
 
 SYSTEMD_DEFAULT_TARGET = "graphical.target"
@@ -40,3 +39,5 @@ EXTRA_USERS_PARAMS = " \
 "
 
 do_image_wic[depends] += "${INITRD_IMAGE}:do_image_complete"
+
+include recipes-smart/images/smart-image.inc

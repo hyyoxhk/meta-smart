@@ -6,7 +6,6 @@
 SUMMARY = "Smart image small"
 LICENSE = "MIT"
 
-include recipes-smart/images/smart-image.inc
 inherit core-image
 
 SYSTEMD_DEFAULT_TARGET = "multi-user.target"
@@ -32,3 +31,5 @@ EXTRA_USERS_PARAMS = " \
 "
 
 do_image_wic[depends] += "${INITRD_IMAGE}:do_image_complete"
+
+include recipes-smart/images/smart-image.inc
