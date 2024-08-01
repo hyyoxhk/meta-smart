@@ -1,0 +1,137 @@
+From 4f20b21fd24ed9452334f7c26ff2ff5b2bd9b8d3 Mon Sep 17 00:00:00 2001
+From: He Yong <hyyoxhk@163.com>
+Date: Thu, 1 Aug 2024 15:37:31 +0800
+Subject: [PATCH] Cmake: remove dependency lxqt
+
+---
+ CMakeLists.txt     | 18 +++++-------------
+ src/CMakeLists.txt | 36 +++++++++++++-----------------------
+ 2 files changed, 18 insertions(+), 36 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 82281f6..f27e47d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,10 +6,6 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+ # versions.
+ project(pavucontrol-qt)
+ 
+-option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files" OFF)
+-
+-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+-
+ set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ set(CMAKE_AUTOMOC ON)
+@@ -19,15 +15,10 @@ include(GNUInstallDirs)
+ 
+ # Minimum Versions
+ set(GLIB_MINIMUM_VERSION "2.50.0")
+-set(LXQTBT_MINIMUM_VERSION "0.8.0")
+ set(QT_MINIMUM_VERSION "5.12.0")
+ 
+ find_package(Qt5Widgets ${QT_MINIMUM_VERSION} REQUIRED)
+ find_package(Qt5LinguistTools ${QT_MINIMUM_VERSION} REQUIRED)
+-find_package(Qt5DBus ${QT_MINIMUM_VERSION} REQUIRED)
+-find_package(lxqt-build-tools ${LXQTBT_MINIMUM_VERSION} REQUIRED)
+-
+-find_package(GLIB ${GLIB_MINIMUM_VERSION} REQUIRED)
+ 
+ set(PAVUCONTROLQT_MAJOR_VERSION 0)
+ set(PAVUCONTROLQT_MINOR_VERSION 16)
+@@ -35,10 +26,6 @@ set(PAVUCONTROLQT_PATCH_VERSION 0)
+ set(PAVUCONTROLQT_VERSION ${PAVUCONTROLQT_MAJOR_VERSION}.${PAVUCONTROLQT_MINOR_VERSION}.${PAVUCONTROLQT_PATCH_VERSION})
+ add_definitions("-DPAVUCONTROLQT_VERSION=\"${PAVUCONTROLQT_VERSION}\"")
+ 
+-include(LXQtPreventInSourceBuilds)
+-include(LXQtCompilerSettings NO_POLICY_SCOPE)
+-include(LXQtTranslate)
+-
+ find_package(PkgConfig REQUIRED)
+ pkg_check_modules(
+     PULSE REQUIRED
+@@ -46,4 +33,9 @@ pkg_check_modules(
+     libpulse-mainloop-glib>=0.9.16
+ )
+ 
++pkg_check_modules(
++    GLIB REQUIRED
++    glib-2.0>=2.50.0
++)
++
+ add_subdirectory(src)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index c686632..18ce7fe 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -3,6 +3,8 @@ include_directories(
+     ${GLIB_INCLUDE_DIRS}
+ )
+ 
++file(GLOB TS_FILES "translations/pavucontrol-qt_*.ts")
++
+ set(pavucontrol-qt_HDRS
+     pavucontrol.h
+     mainwindow.h
+@@ -43,27 +45,16 @@ set(pavucontrol-qt_UI
+ )
+ 
+ # Translations
+-lxqt_translate_ts(pavucontrol-qt_QM_FILES
+-    UPDATE_TRANSLATIONS
+-        ${UPDATE_TRANSLATIONS}
+-    SOURCES
+-        ${pavucontrol-qt_HDRS}
+-        ${pavucontrol-qt_SRCS}
+-        ${pavucontrol-qt_UI}
+-    INSTALL_DIR
+-        "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/translations"
+-)
+-
+-lxqt_translate_desktop(DESKTOP_FILES
+-    SOURCES
+-    pavucontrol-qt.desktop.in
++qt5_create_translation(pavucontrol-qt_QM_FILES
++    ${pavucontrol-qt_HDRS}
++    ${pavucontrol-qt_SRCS}
++    ${pavucontrol-qt_UI}
++    ${TS_FILES}
+ )
+ 
+ add_executable(pavucontrol-qt
+     ${pavucontrol-qt_SRCS}
+     ${pavucontrol-qt_QM_FILES}
+-    ${pavucontrol-qt_QM_LOADER}
+-    ${DESKTOP_FILES}
+ )
+ set_property(
+      TARGET pavucontrol-qt APPEND
+@@ -73,19 +64,18 @@ set_property(
+ 
+ target_link_libraries(pavucontrol-qt
+     Qt5::Widgets
+-    Qt5::DBus
+     ${PULSE_LDFLAGS}
+     ${GLIB_LDFLAGS}
+ )
+ 
+-install(TARGETS
+-    pavucontrol-qt
+-    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
++install(FILES
++    ${pavucontrol-qt_QM_FILES}
++    DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/translations"
+     COMPONENT Runtime
+ )
+ 
+-install(FILES
+-    ${DESKTOP_FILES}
+-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
++install(TARGETS
++    pavucontrol-qt
++    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+     COMPONENT Runtime
+ )
+-- 
+2.34.1
+
