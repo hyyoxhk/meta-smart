@@ -34,6 +34,7 @@ EXTRA_USERS_PARAMS = " \
     usermod -a -G adm smart; \
     usermod -a -G sudo smart; \
     usermod -a -G video smart; \
+    usermod -a -G render smart; \
     usermod -a -G wayland smart; \
     usermod -s /bin/sh smart; \
 "
