@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 SRC_URI = " \
     git://github.com/lxqt/pavucontrol-qt.git;protocol=https;branch=master \
     file://0001-Cmake-remove-dependency-lxqt.patch \
+    file://multimedia-volume-control.png \
 "
 SRCREV = "650876762e4e3f715b3804fa45d66a7377c8eea9"
 
@@ -16,3 +17,12 @@ inherit cmake_qt5 pkgconfig
 DEPENDS += "qtbase glib-2.0 pulseaudio qttools qttools-native"
 
 RDEPENDS_${PN} += "pulseaudio-server"
+
+do_install:append () {
+    install -d ${D}${datadir}/icons/hicolor/24x24/devices
+    install -m 644 ${WORKDIR}/multimedia-volume-control.png ${D}${datadir}/icons/hicolor/24x24/devices
+}
+
+FILES:${PN} += " \
+    ${datadir}/icons/* \
+"
