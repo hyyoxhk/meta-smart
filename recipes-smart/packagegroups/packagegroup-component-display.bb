@@ -22,4 +22,5 @@ RDEPENDS:${PN} = " \
     fcitx5-qt \
     fcitx5-chinese-addons \
     fcitx5-configtool \
+    pavucontrol-qt \
 "
