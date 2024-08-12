@@ -37,6 +37,8 @@ RDEPENDS:${PN} = " \
     zlib \
     nspr \
     nss \
+    libinih \
+    json-c \
     \
     sudo \
     firmwared \
