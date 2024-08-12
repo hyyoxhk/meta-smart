@@ -19,6 +19,8 @@ BASELAYERS ?= " \
     ${OEROOT}/layers/meta-openembedded/meta-python \
 "
 
+FCITX5LAYER = "${OEROOT}/layers/meta-fcitx5"
+
 SWUPDATELAYER = "${OEROOT}/layers/meta-swupdate"
 
 QT5LAYER ?= "${@'${OEROOT}/layers/meta-qt5' if os.path.isfile('${OEROOT}/layers/meta-qt5/conf/layer.conf') else ''}"
@@ -37,6 +39,7 @@ COMPONENTLAYER = "${@'${OEROOT}/layers/meta-board/meta-smart' if os.path.isfile(
 # add BSP layer
 BBLAYERS += " \
     ${POKYLAYER} \
+    ${FCITX5LAYER} \
     ${BASELAYERS} \
     ${SWUPDATELAYER} \
     ${QT5LAYER} \
