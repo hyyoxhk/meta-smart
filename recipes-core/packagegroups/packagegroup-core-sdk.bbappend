@@ -8,4 +8,5 @@ RDEPENDS:packagegroup-core-sdk += " \
     wayland-tools \
     cmake \
     meson \
+    git \
 "
