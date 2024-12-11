@@ -17,7 +17,6 @@ SUMMARY:${PN} = "about display"
 RDEPENDS:${PN} = " \
     weston \
     wayland-utils \
-    wlroots \
     fcitx5 \
     fcitx5-qt \
     fcitx5-chinese-addons \
