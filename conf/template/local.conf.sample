@@ -302,5 +302,12 @@ BUILDHISTORY_COMMIT = "1"
 
 # Clean up working directory after build
 INHERIT += "rm_work"
+INHERIT += "rockchip-image"
 
 LICENSE_FLAGS_ACCEPTED += "commercial"
+
+YUNMI_GITLAB_URL = "git@192.168.0.102:2222"
+YUNMI_GITLAB_PROTOCOL = "ssh"
+
+BB_NUMBER_THREADS = "10"
+PARALLEL_MAKE = "-j 10"
