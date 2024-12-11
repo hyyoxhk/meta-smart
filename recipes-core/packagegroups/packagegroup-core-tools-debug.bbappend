@@ -4,4 +4,5 @@ RDEPENDS:${PN} += " \
     openssh-sftp-server \
     glmark2 \
     libgpiod-tools \
+    i2c-tools \
 "
