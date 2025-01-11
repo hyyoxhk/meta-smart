@@ -304,3 +304,8 @@ BUILDHISTORY_COMMIT = "1"
 INHERIT += "rm_work"
 
 LICENSE_FLAGS_ACCEPTED += "commercial"
+
+COMMERCIAL_AUDIO_PLUGINS ?= ""
+# COMMERCIAL_AUDIO_PLUGINS ?= "gst-plugins-ugly-mad gst-plugins-ugly-mpegaudioparse"
+COMMERCIAL_VIDEO_PLUGINS ?= ""
+# COMMERCIAL_VIDEO_PLUGINS ?= "gst-plugins-ugly-mpeg2dec gst-plugins-ugly-mpegstream gst-plugins-bad-mpegvideoparse"
