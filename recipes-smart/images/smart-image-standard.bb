@@ -23,7 +23,6 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-component-qt-base \
     packagegroup-component-qt-fonts \
     packagegroup-component-qt-extra \
-    packagegroup-component-gstreamer \
 "
 
 inherit extrausers
