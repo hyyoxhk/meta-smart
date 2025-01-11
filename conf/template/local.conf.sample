@@ -306,6 +306,11 @@ INHERIT += "rockchip-image"
 
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
+COMMERCIAL_AUDIO_PLUGINS ?= ""
+# COMMERCIAL_AUDIO_PLUGINS ?= "gst-plugins-ugly-mad gst-plugins-ugly-mpegaudioparse"
+COMMERCIAL_VIDEO_PLUGINS ?= ""
+# COMMERCIAL_VIDEO_PLUGINS ?= "gst-plugins-ugly-mpeg2dec gst-plugins-ugly-mpegstream gst-plugins-bad-mpegvideoparse"
+
 YUNMI_GITLAB_URL = "git@192.168.0.102:2222"
 YUNMI_GITLAB_PROTOCOL = "ssh"
 

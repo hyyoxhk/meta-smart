@@ -18,6 +18,9 @@ IMAGE_FEATURES += " \
 
 CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-component-base \
+    gstreamer1.0-meta-base \
+    gstreamer1.0-meta-audio \
+    gstreamer1.0-rtsp-server \
 "
 
 inherit extrausers
