@@ -92,9 +92,13 @@ if [ -f /lib/systemd/systemd-growfs ]; then
     then
         exit 0;
     fi
-    /lib/systemd/systemd-growfs /
     /lib/systemd/systemd-growfs /boot
     /lib/systemd/systemd-growfs /usr/local
+fi
+
+ROOT_FS_TYPE=`grep $ROOT_DEVICE /proc/mounts | awk '{print $3}'`
+if [ "$ROOT_FS_TYPE" != "squashfs" ]; then
+    /lib/systemd/systemd-growfs /
 fi
 
 df -h > /dev/kmsg
