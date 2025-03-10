@@ -1,0 +1,20 @@
+[Unit]
+Description=Bind mount volatile /home/smart
+DefaultDependencies=no
+Before=local-fs.target
+RequiresMountsFor=/var/volatile /home
+ConditionPathIsReadWrite=/var/volatile
+ConditionPathExists=/home/smart
+ConditionPathIsReadWrite=!/home/smart
+
+[Service]
+Type=oneshot
+RemainAfterExit=Yes
+TimeoutSec=0
+Environment=MOUNT_COPYBIND_AVOID_OVERLAYFS=0
+ExecStart=/sbin/mount-copybind /var/volatile/home /home/smart
+ExecStartPost=chown smart:smart /home/smart
+ExecStop=/bin/umount /home/smart
+
+[Install]
+WantedBy=local-fs.target
