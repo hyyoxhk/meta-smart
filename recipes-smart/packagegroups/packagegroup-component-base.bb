@@ -50,6 +50,7 @@ RDEPENDS:${PN} = " \
     \
     libgpiod \
     libiio \
+    c-periphery \
     \
     parted \
     gptfdisk \
@@ -59,6 +60,9 @@ RDEPENDS:${PN} = " \
     \
     swupdate \
     u-boot-default-env \
+    \
+    mediamtx \
+    opencv \
     \
     ${@bb.utils.contains('COMBINED_FEATURES', 'alsa', 'alsa-state', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'alsa', 'alsa-utils-amixer', '', d)} \
