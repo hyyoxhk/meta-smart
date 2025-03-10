@@ -1,20 +1,14 @@
 #!/bin/sh
 
-# set weston variables for use with global weston socket
-global_socket="/run/wayland-0"
-if [ -e "$global_socket" ]; then
-	weston_group=$(stat -c "%G" "$global_socket")
-	if [ "$(id -u)" = "0" ]; then
-		export WAYLAND_DISPLAY="$global_socket"
-	else
-		case "$(groups "$USER")" in
-			*"$weston_group"*)
-				export WAYLAND_DISPLAY="$global_socket"
-				;;
-			*)
-				;;
-		esac
-	fi
-	unset weston_group
+if [ -z $XDG_RUNTIME_DIR ]; then
+    XDG_RUNTIME_DIR=/run/user/`id -u`
+    if [ -e $XDG_RUNTIME_DIR ]; then
+        export XDG_RUNTIME_DIR
+        if [ -e $XDG_RUNTIME_DIR/wayland-0 ]; then
+            export WAYLAND_DISPLAY=wayland-0
+        fi
+        if [ -e $XDG_RUNTIME_DIR/wayland-1 ]; then
+            export WAYLAND_DISPLAY=wayland-1
+        fi
+    fi
 fi
-unset global_socket
