@@ -8,4 +8,5 @@ RDEPENDS:${PN} += " \
     iperf3 \
     pciutils \
     alsa-utils-alsamixer \
+    minicom \
 "
