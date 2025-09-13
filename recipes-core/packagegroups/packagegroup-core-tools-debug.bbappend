@@ -9,4 +9,5 @@ RDEPENDS:${PN} += " \
     pciutils \
     alsa-utils-alsamixer \
     minicom \
+    fio \
 "
