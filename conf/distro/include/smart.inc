@@ -21,9 +21,6 @@ TARGET_VENDOR = "-smart"
 
 LOCALCONF_VERSION = "1"
 
-# Append distro name to each image name
-IMAGE_BASENAME:append = "-${DISTRO}"
-
 SDK_VENDOR = "-smartsdk"
 SDK_VERSION := "${@'${DISTRO_VERSION}'.replace('snapshot-${DATE}','snapshot')}"
 SDK_VERSION[vardepsexclude] = "DATE"
@@ -90,5 +87,5 @@ INITRD_IMAGE ?= "smart-image-initrd"
 INITRD_SHORTNAME ?= "initrd.img"
 
 IMAGE_BOOT_FILES += " \
-    ${DEPLOY_DIR_IMAGE}/${INITRD_IMAGE}-${DISTRO}-${MACHINE}.${INITRAMFS_FSTYPES};${INITRD_SHORTNAME} \
+    ${DEPLOY_DIR_IMAGE}/${INITRD_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES};${INITRD_SHORTNAME} \
     "
