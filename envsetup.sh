@@ -198,41 +198,6 @@ stoe_list_images() {
 }
 
 ######################################################
-# Get distro code name to udpate DL and SSTATE path in site.conf
-#
-get_distrocodename()
-{
-    #get distro related folder from layer root
-    local distro_dir=$(find ${ROOTOE}/$_META_LAYER_ROOT/ -type d \( -path '.git' -o -path '.repo' -o -path 'build*' -o -path 'source*' -o -path 'script*' \) -prune -o -type d -wholename '*/conf/distro')
-    if [ -z "$distro_dir" ]; then
-        echo ""
-        echo "[WARNING] No */conf/distro folder available in $_META_LAYER_ROOT layer"
-        echo "[WARNING] Init ST_OE_DISTRO_CODENAME to NONE"
-        echo ""
-        _DISTRO_CODENAME="NONE"
-        return
-    fi
-
-    #gather DISTRO_CODENAME values
-    _DISTRO_CODENAME=$(grep --exclude='.*' -Rs '^DISTRO_CODENAME' $distro_dir | sed 's|.*DISTRO_CODENAME[ \t]*=[ \t]*"\(.*\)"[ \t]*$|\1|g'| sort -u)
-
-    #make sure that DISTRO_CODENAME is defined and has only one value
-    if [ -z "$_DISTRO_CODENAME" ] ; then
-        echo ""
-        echo "[ERROR] No DISTRO_CODENAME definition found in folder:"
-        echo "$distro_dir"
-        echo ""
-        return 1
-    elif [ "$(echo $_DISTRO_CODENAME | wc -w)" -gt 1 ]; then
-        echo ""
-        echo "[ERROR] Found different DISTRO_CODENAME definition in $_META_LAYER_ROOT layer. Please cleanup/clarify:"
-        echo "$_DISTRO_CODENAME"
-        echo ""
-        return 1
-    fi
-}
-
-######################################################
 # Apply configuration to local.conf file
 #
 conf_localconf()
@@ -259,7 +224,6 @@ conf_notes()
     if [ -f ${_TEMPLATECONF}/conf-notes.txt ]; then
         cp ${_TEMPLATECONF}/conf-notes.txt conf
     elif [ -z "${_TEMPLATECONF}" ]; then
-        # '_TEMPLATECONF' is empty when dealing with 'nodistro' use case
         # Copy then the default OE 'conf-notes.txt' file
         if [ -f ${ROOTOE}/$_BUILDSYSTEM/meta/conf/conf-notes.txt ]; then
             cp ${ROOTOE}/$_BUILDSYSTEM/meta/conf/conf-notes.txt conf
@@ -272,35 +236,13 @@ conf_notes()
 #
 get_templateconf()
 {
-    if [ "$DISTRO" = "nodistro" ]; then
-        #for nodistro choice use default sample files from openembedded-core
-        echo ""
-        echo "[WARNING] Using default openembedded template configuration files for '$DISTRO' setting."
-        echo ""
-        _TEMPLATECONF=""
+    distro_path=${ROOTOE}/$_META_LAYER_ROOT/meta-smart
+    #configure _TEMPLATECONF path
+    if [ -f $distro_path/conf/template/bblayers.conf.sample ]; then
+        _TEMPLATECONF=$distro_path/conf/template
     else
-        #extract bsp path
-        local distro_path=$(find ${ROOTOE}/$_META_LAYER_ROOT/ -type d \( -name '.git' -o -name '.repo' -o -name 'build*' -o -name 'source*' -o -name 'script*' \) -prune -o -type f -name "$DISTRO.conf" | grep "/distro/$DISTRO.conf" | sed 's|\(.*\)/conf/distro/\(.*\)|\1|')
-        if [ -z "$distro_path" ]; then
-            echo ""
-            echo "[ERROR] No '$DISTRO.conf' file available in $_META_LAYER_ROOT"
-            echo ""
-            return 1
-        fi
-        #make sure path is single
-        if [ "$(echo $distro_path | wc -w)" -gt 1 ]; then
-            echo ""
-            echo "[ERROR] Found multiple '$DISTRO.conf' file in $_META_LAYER_ROOT"
-            echo ""
-            return 1
-        fi
-        #configure _TEMPLATECONF path
-        if [ -f $distro_path/conf/template/bblayers.conf.sample ]; then
-            _TEMPLATECONF=$distro_path/conf/template
-        else
-            echo "[WARNING] default template configuration files not found in $_META_LAYER_ROOT layer: using default ones from openembedded"
-            _TEMPLATECONF=""
-        fi
+        echo "[WARNING] default template configuration files not found in $_META_LAYER_ROOT layer: using default ones from openembedded"
+        _TEMPLATECONF=""
     fi
 }
 
@@ -328,7 +270,7 @@ _default_config_set() {
 
 
 ######################################################
-# Format DISTRO and MACHINE list from configuration file list applying the specific _FORMAT_PATTERN:
+# Format MACHINE list from configuration file list applying the specific _FORMAT_PATTERN:
 #  <CONFIG-NAME>|<_FORMAT_PATTERN>|<CONFIG-DESCRIPTION>
 #
 _choice_formated_configs() {
@@ -346,16 +288,16 @@ _choice_formated_configs() {
 
 ######################################################
 # Format BUILD_DIR list from applying the specific _FORMAT_PATTERN:
-#  <DIR-NAME>|<_FORMAT_PATTERN>|<DISTRO-value and MACHINE-value>
+#  <DIR-NAME>|<_FORMAT_PATTERN>|<MACHINE-value>
 #
 choice_formated_dirs() {
     TmpFile=$(mktemp)
     for dir in $1
     do
-        echo "${dir}${_FORMAT_PATTERN}DISTRO is '$(oe_config_read ${ROOTOE}/$dir DISTRO)' and MACHINE is '$(oe_config_read ${ROOTOE}/$dir MACHINE)'" >> $TmpFile
+        echo "${dir}${_FORMAT_PATTERN}MACHINE is '$(oe_config_read ${ROOTOE}/$dir MACHINE)'" >> $TmpFile
     done
     # Add new build config option
-    echo "NEW${_FORMAT_PATTERN}*** SET NEW DISTRO AND MACHINE BUILD CONFIG ***" >> $TmpFile
+    echo "NEW${_FORMAT_PATTERN}*** SET NEW MACHINE BUILD CONFIG ***" >> $TmpFile
     echo "$(cat $TmpFile)"
     rm -f $TmpFile
 }
@@ -486,7 +428,6 @@ linux_host_check() {
 oe_unset() {
     unset BUILD_DIR
     unset DISTRO
-    unset DISTRO_INIT
     unset MACHINE
     unset MACHINE_INIT
     unset _FORCE_RECONF
@@ -509,7 +450,7 @@ oe_unset() {
     unset -f set_env_init
     unset -f default_config_get
     unset -f _default_config_set
-    unset -f get_distrocodename
+
     # Delete File
     [ -f ${LISTDIR} ] && rm -f ${LISTDIR}
 }
@@ -596,6 +537,8 @@ _QUIET=${_QUIET:-0}
 READTIMEOUT=${READTIMEOUT:-60}
 TRIALMAX=${TRIALMAX:-100}
 
+[ -z "$DISTRO" ] && DISTRO="smart"
+
 #----------------------------------------------
 # parsing options
 #
@@ -651,9 +594,9 @@ linux_host_check
 #----------------------------------------------
 # Init BUILD_DIR variable
 #
-if [ -z ${BUILD_DIR} ] && ! [ -z $DISTRO ] && ! [ -z $MACHINE ]; then
-    # In case DISTRO and MACHINE are provided use them to init BUILD_DIR
-    BUILD_DIR="build-${DISTRO//-}-$MACHINE"
+if [ -z ${BUILD_DIR} ] && ! [ -z $MACHINE ]; then
+    # In case MACHINE are provided use them to init BUILD_DIR
+    BUILD_DIR="build-$MACHINE"
 fi
 
 if [ -z ${BUILD_DIR} ]; then
@@ -690,15 +633,6 @@ else
 fi
 
 if [ "$_INIT" -eq 1 ]; then
-    # Set DISTRO
-    if [ -z "$DISTRO" ]; then
-        DISTRO_CHOICES=$(_choice_formated_configs distro)
-        [ "$?" -eq 1 ] && { echo "$DISTRO_CHOICES"; oe_unset; return 1; }
-        # Add nodistro option
-        DISTRO_CHOICES=$(echo -e "$DISTRO_CHOICES\nnodistro${_FORMAT_PATTERN}*** DEFAULT OPENEMBEDDED SETTING : DISTRO is not defined ***")
-        choice DISTRO "$DISTRO_CHOICES"
-        [ -z "$DISTRO" ] && { echo "Selection escaped: exiting now..."; oe_unset; return 1; }
-    fi
     # Set MACHINE
     if [ -z "$MACHINE" ]; then
         MACHINE_CHOICES=$(_choice_formated_configs machine)
@@ -708,7 +642,7 @@ if [ "$_INIT" -eq 1 ]; then
     fi
 
     # Init BUILD_DIR if not yet set
-    [ -z "${BUILD_DIR}" ] && BUILD_DIR="build-${DISTRO//-}-$MACHINE"
+    [ -z "${BUILD_DIR}" ] && BUILD_DIR="build-$MACHINE"
 
     # Check if BUILD_DIR already exists to use previous config (i.e. set _INIT to 0)
     if [ -f ${ROOTOE}/${BUILD_DIR}/conf/bblayers.conf ] && [ -f ${ROOTOE}/${BUILD_DIR}/conf/local.conf ]; then
@@ -716,22 +650,8 @@ if [ "$_INIT" -eq 1 ]; then
     fi
 
 else
-    # Get DISTRO and MACHINE from configuration file
-    DISTRO_INIT=$(oe_config_read ${ROOTOE}/${BUILD_DIR} DISTRO)
+    # Get MACHINE from configuration file
     MACHINE_INIT=$(oe_config_read ${ROOTOE}/${BUILD_DIR} MACHINE)
-
-    # If DISTRO value is not set in conf file, then default to nodistro
-    [[ ${DISTRO_INIT} =~ \< ]] && DISTRO_INIT="nodistro"
-
-    # Set DISTRO
-    if [ -z "$DISTRO" ]; then
-        DISTRO=${DISTRO_INIT}
-    elif [ "$DISTRO" != "${DISTRO_INIT}" ]; then
-        # User has defined a wrong DISTRO for current BUILD_DIR configuration
-        echo "[ERROR] DISTRO $DISTRO does not match "${DISTRO_INIT}" already set in ${BUILD_DIR}"
-        oe_unset
-        return 1
-    fi
     # Set MACHINE
     if [ -z "$MACHINE" ]; then
         MACHINE=${MACHINE_INIT}
@@ -764,12 +684,6 @@ TEMPLATECONF_relative=$( realpath -m --relative-to=${ROOTOE}/$BUILD_DIR/conf $_T
 TEMPLATECONF=${TEMPLATECONF_relative} source ${ROOTOE}/$_BUILDSYSTEM/oe-init-build-env ${BUILD_DIR} >> /dev/null
 
 [ "$?" -eq 1 ] && { oe_unset; return 1; }
-
-#----------------------------------------------
-# Init DISTRO CODE NAME to use for DL_DIR and SSTATE_DIR path
-#
-get_distrocodename
-[ "$?" -eq 1 ] && { rm -rf $BUILDDIR/conf/*; oe_unset; return 1; }
 
 #----------------------------------------------
 # Apply specific configurations
