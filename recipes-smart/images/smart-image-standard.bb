@@ -40,6 +40,6 @@ EXTRA_USERS_PARAMS = " \
     usermod -s /bin/sh smart; \
 "
 
-do_image_wic[depends] += "${INITRD_IMAGE}:do_image_complete"
+do_image_wic[depends] += "${INITRAMFS_IMAGE}:do_image_complete"
 
 include recipes-smart/images/smart-image.inc
