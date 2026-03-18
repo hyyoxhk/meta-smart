@@ -42,15 +42,13 @@ setup_run() {
             fi
             sleep 1
         done
-        # The existing rootfs module has no support for rootfs images. Assign the rootfs image.
-        bootparam_root="/run/media/$ROOT_DISK/$ROOT_IMAGE"
     fi
 
-    if [ "$bootparam_LABEL" != "boot" -a -f /init.d/$bootparam_LABEL.sh ]; then
+    if [ "$bootparam_LABEL" = "install" -a -f /init.d/$bootparam_LABEL.sh ]; then
         if [ -f /run/media/$ROOT_DISK/$ROOT_IMAGE ] ; then
             ./init.d/$bootparam_LABEL.sh $ROOT_DISK $ROOT_IMAGE
         else
-            fatal "[ERROR]: could not find $bootparam_LABEL script"
+            fatal "[ERROR]: could not find $ROOT_IMAGE image"
         fi
     fi
 }
