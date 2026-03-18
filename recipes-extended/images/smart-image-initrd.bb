@@ -23,6 +23,7 @@ IMAGE_LINGUAS = ""
 PACKAGE_INSTALL = " \
     busybox \
     initramfs-framework-base \
+    initramfs-module-overlayroot \
     initramfs-module-udev \
     init-setup \
     init-install \
