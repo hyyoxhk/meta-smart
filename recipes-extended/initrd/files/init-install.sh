@@ -35,7 +35,7 @@ case $live_dev_name in
         elif [ "$dev_attr" = "udisk" ]; then
             live_dev_name=${live_dev_name%%[0-9]*}
         else
-            echo "[ERROR]: unknown device, not currently supported !!!"
+            fatal "[ERROR]: unknown device, not currently supported !!!"
         fi
         ;;
 esac
@@ -118,7 +118,7 @@ if [ -n "$TARGET_DEVICE_NAME" ]; then
     echo "[INFO]: installing image on /dev/$TARGET_DEVICE_NAME ..."
     echo ""
 else
-    echo "[ERROR]: No hard drive selected. Installation aborted."
+    fatal "[ERROR]: No hard drive selected. Installation aborted."
     echo ""
     exit 1
 fi
