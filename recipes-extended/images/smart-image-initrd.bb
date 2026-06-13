@@ -7,10 +7,11 @@
 SUMMARY = "initrd image"
 LICENSE = "MIT"
 
-IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
 inherit core-image
 
-IMAGE_FSTYPES:remove = "wic ext4 ext4.gz"
+python __anonymous () {
+    d.setVar("IMAGE_FSTYPES", d.getVar("INITRAMFS_FSTYPES") or "")
+}
 
 IMAGE_ROOTFS_SIZE = "8192"
 IMAGE_ROOTFS_EXTRA_SPACE = "0"
