@@ -4,17 +4,17 @@ disk=`echo /sys/block/*/"${root_current}" | cut -d "/" -f 4`
 user_part_num=`ls /sys/block/${disk} | grep "${disk}" | grep -v boot | wc -l`
 root_b_part_num=`expr $user_part_num - 1`
 
-padding=""
+part_prefix=""
 case $disk in
     mmcblk*)
-        padding="p"
+        part_prefix="p"
         ;;
     sd*)
-        padding=""
+        part_prefix=""
         ;;
 esac
 
-root_b="${disk}${padding}${root_b_part_num}"
+root_b="${disk}${part_prefix}${root_b_part_num}"
 
 if [ $root_current == $root_b ];then
 	selection="-e stable,copy1"
