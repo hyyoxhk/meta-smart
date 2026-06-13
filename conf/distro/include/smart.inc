@@ -28,6 +28,9 @@ SDK_VERSION[vardepsexclude] = "DATE"
 SDK_NAME = "${DISTRO}-${SDK_ARCH}"
 SDKPATHINSTALL = "/opt/${DISTRO}"
 
+TOOLCHAIN_HOST_TASK:append = " packagegroup-rust-cross-canadian-${MACHINE}"
+TOOLCHAIN_HOST_TASK:append = " packagegroup-go-cross-canadian-${MACHINE}"
+
 # DISTRO features
 # =========================================================================
 DISTRO_FEATURES  = "alsa"
