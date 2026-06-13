@@ -7,6 +7,45 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
+ROOT_IMAGE="magic.img"
+ROOT_DISK=""
+shelltimeout=30
+
+if [ -z "$bootparam_root" -o "$bootparam_root" = "/dev/ram0" ]; then
+    echo "[INFO]: waiting for removable media..."
+    echo ""
+    C=0
+    while true
+    do
+        for i in `ls /run/media 2>/dev/null`; do
+            if [ -f /run/media/$i/$ROOT_IMAGE ] ; then
+                found="yes"
+                ROOT_DISK="$i"
+                break
+            fi
+        done
+        if [ "$found" = "yes" ]; then
+            break;
+        fi
+        # don't wait for more than $shelltimeout seconds, if it's set
+        if [ -n "$shelltimeout" ]; then
+            echo -n " " $(( $shelltimeout - $C ))
+            if [ $C -ge $shelltimeout ]; then
+                echo "[INFO]: mounted filesystems"
+                echo ""
+                mount | grep media
+                echo "[INFO]: available block devices"
+                echo ""
+                cat /proc/partitions
+                fatal "[ERROR]: cannot find $ROOT_IMAGE file in /run/media/* , dropping to a shell"
+            fi
+            C=$(( C + 1 ))
+        fi
+        sleep 1
+    done
+fi
+
+
 # Get a list of hard drives
 hdnamelist=""
 live_dev_name=`cat /proc/mounts | grep ${1%/} | awk '{print $1}'`
@@ -142,7 +181,8 @@ mkfs.vfat ${device} -I &> /dev/null
 
 echo "[WARNING]: writing data, do not power off ..."
 echo ""
-dd if=/run/media/$1/$2 of=${device} bs=8M conv=fdatasync status=progress
+dd if=/run/media/${ROOT_DISK}/${ROOT_IMAGE} of=${device} bs=8M conv=fdatasync status=progress
+
 sync
 echo "[SUCCESS]: writing data is complete..."
 echo ""
