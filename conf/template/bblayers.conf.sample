@@ -23,6 +23,12 @@ FCITX5LAYER = "${OEROOT}/layers/meta-fcitx5"
 
 SWUPDATELAYER = "${OEROOT}/layers/meta-swupdate"
 
+SECURITYLAYER = "${OEROOT}/layers/meta-security"
+
+GOLAYER = "${OEROOT}/layers/meta-lts-mixins-go"
+
+RUSTLAYER = "${OEROOT}/layers/meta-lts-mixins-rust"
+
 QT5LAYER ?= "${@'${OEROOT}/layers/meta-qt5' if os.path.isfile('${OEROOT}/layers/meta-qt5/conf/layer.conf') else ''}"
 
 EXYNOSLAYERS ?= "${@'${OEROOT}/layers/meta-board/meta-exynos' if os.path.isfile('${OEROOT}/layers/meta-board/meta-exynos/conf/layer.conf') else ''}"
@@ -42,6 +48,9 @@ BBLAYERS += " \
     ${FCITX5LAYER} \
     ${BASELAYERS} \
     ${SWUPDATELAYER} \
+    ${SECURITYLAYER} \
+    ${GOLAYER} \
+    ${RUSTLAYER} \
     ${QT5LAYER} \
     ${BSPLAYERS} \
     ${COMPONENTLAYER} \

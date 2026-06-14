@@ -52,6 +52,7 @@ DISTRO_FEATURES += "bluez5"
 DISTRO_FEATURES += "pam"
 DISTRO_FEATURES += "acl"
 DISTRO_FEATURES += "pci"
+DISTRO_FEATURES += "security"
 
 DISTRO_FEATURES_FILTER_NATIVESDK = "wayland"
 
@@ -92,3 +93,7 @@ INITRAMFS_SHORTNAME ?= "initrd.img"
 IMAGE_BOOT_FILES += " \
     ${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES};${INITRAMFS_SHORTNAME} \
     "
+
+DM_VERITY_IMAGE ?= "smart-image-standard"
+DM_VERITY_IMAGE_TYPE ?= "squashfs-zst"
+IMAGE_CLASSES += "dm-verity-img"

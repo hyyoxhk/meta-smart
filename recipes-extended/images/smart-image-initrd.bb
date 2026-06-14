@@ -7,11 +7,11 @@
 SUMMARY = "initrd image"
 LICENSE = "MIT"
 
-inherit core-image
-
 python __anonymous () {
     d.setVar("IMAGE_FSTYPES", d.getVar("INITRAMFS_FSTYPES") or "")
 }
+
+inherit core-image
 
 IMAGE_ROOTFS_SIZE = "8192"
 IMAGE_ROOTFS_EXTRA_SPACE = "0"
@@ -31,3 +31,12 @@ PACKAGE_INSTALL = " \
     coreutils \
     dosfstools \
 "
+
+do_image[depends] += "${DM_VERITY_IMAGE}:do_image_${@d.getVar('DM_VERITY_IMAGE_TYPE').replace('-', '_')}"
+
+deploy_verity_hash() {
+    install -D -m 0644 \
+        ${STAGING_VERITY_DIR}/${DM_VERITY_IMAGE}.${DM_VERITY_IMAGE_TYPE}.verity.env \
+        ${IMAGE_ROOTFS}${datadir}/misc/dm-verity.env
+}
+IMAGE_PREPROCESS_COMMAND += "deploy_verity_hash;"

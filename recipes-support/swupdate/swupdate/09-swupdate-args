@@ -23,3 +23,13 @@ else
 fi
 
 SWUPDATE_EXTRA_ARGS="${selection} -f /etc/swupdate.cfg"
+
+rootfs=`swupdate -g`
+
+if [ $rootfs == '/dev/nvme0n1p2' ]; then
+	selection="-e stable,copy2"
+else
+	selection="-e stable,copy1"
+fi
+
+SWUPDATE_EXTRA_ARGS="${selection} -f /etc/swupdate.cfg"

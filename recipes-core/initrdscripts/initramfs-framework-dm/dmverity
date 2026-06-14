@@ -1,0 +1,94 @@
+#!/bin/sh
+
+dmverity_enabled() {
+    return 0
+}
+
+verify_slot() {
+    local dev="$1"
+
+    dmsetup remove verity_test >/dev/null 2>&1
+
+    veritysetup \
+        --data-block-size="${DATA_BLOCK_SIZE}" \
+        --hash-offset="${DATA_SIZE}" \
+        create verity_test \
+        "${dev}" \
+        "${dev}" \
+        "${ROOT_HASH}" >/dev/null 2>&1 || return 1
+
+    mkdir -p /run/verity-test
+
+    mount \
+        -t squashfs \
+        -o ro \
+        /dev/mapper/verity_test \
+        /run/verity-test >/dev/null 2>&1 || {
+        dmsetup remove verity_test >/dev/null 2>&1
+        return 1
+    }
+
+    dd if=/dev/mapper/verity_test \
+        of=/dev/null \
+        bs=8M \
+        status=none >/dev/null 2>&1 || { 
+            dmsetup remove verity_test; 
+            return 1;
+        }
+
+    umount /run/verity-test >/dev/null 2>&1
+    dmsetup remove verity_test >/dev/null 2>&1
+
+    return 0
+}
+
+wait_root_device() {
+    local elapsed delay timeout
+
+    elapsed=0
+    delay=${bootparam_rootdelay:-1}
+    timeout=${bootparam_roottimeout:-5}
+
+    while [ ! -b "${bootparam_root}" ]; do
+
+        if [ "${elapsed}" -ge "${timeout}" ]; then
+            return 1
+        fi
+
+        debug "Sleeping for ${delay} second(s) to wait root to settle..."
+        sleep "${delay}"
+
+        elapsed=$((elapsed + delay))
+    done
+
+    return 0
+}
+
+dmverity_run() {
+
+    . /usr/share/misc/dm-verity.env
+
+    if [ -z "$DATA_SIZE" ] || [ -z "$DATA_BLOCK_SIZE" ] || [ -z "$ROOT_HASH" ]; then
+        fatal "dm-verity env not found in u-boot"
+    fi
+
+    wait_root_device || fatal "Root device resolution failed"
+
+
+    verify_slot "${bootparam_root}" || fatal "rootfs slots failed dm-verity verification"
+
+    dmsetup remove rootfs >/dev/null 2>&1
+
+    veritysetup \
+        --data-block-size="${DATA_BLOCK_SIZE}" \
+        --hash-offset="${DATA_SIZE}" \
+        create rootfs \
+        "${bootparam_root}" \
+        "${bootparam_root}" \
+        "${ROOT_HASH}" || fatal "dm-verity setup failed"
+
+    mount \
+        -o ro \
+        /dev/mapper/rootfs \
+        "${ROOTFS_DIR}" || fatal "mount rootfs failed"
+}
