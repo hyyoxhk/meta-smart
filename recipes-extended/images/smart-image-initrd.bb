@@ -24,10 +24,12 @@ IMAGE_LINGUAS = ""
 PACKAGE_INSTALL = " \
     busybox \
     initramfs-framework-base \
+    initramfs-module-dmverity \
     initramfs-module-overlayroot \
     initramfs-module-udev \
     init-setup \
     init-install \
+    init-resize \
     coreutils \
     dosfstools \
 "

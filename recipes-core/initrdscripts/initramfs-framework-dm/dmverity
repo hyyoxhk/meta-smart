@@ -4,6 +4,26 @@ dmverity_enabled() {
     return 0
 }
 
+dmverity_resolve_device() {
+    case "${bootparam_root}" in
+        UUID=*)
+            realpath "/dev/disk/by-uuid/${bootparam_root#UUID=}"
+            ;;
+        PARTUUID=*)
+            realpath "/dev/disk/by-partuuid/${bootparam_root#PARTUUID=}"
+            ;;
+        PARTLABEL=*)
+            realpath "/dev/disk/by-partlabel/${bootparam_root#PARTLABEL=}"
+            ;;
+        LABEL=*)
+            realpath "/dev/disk/by-label/${bootparam_root#LABEL=}"
+            ;;
+        *)
+            realpath "${bootparam_root}"
+            ;;
+    esac
+}
+
 verify_slot() {
     local dev="$1"
 
@@ -43,13 +63,14 @@ verify_slot() {
 }
 
 wait_root_device() {
-    local elapsed delay timeout
+    local root_dev elapsed delay timeout
 
+    root_dev="${1}"
     elapsed=0
     delay=${bootparam_rootdelay:-1}
     timeout=${bootparam_roottimeout:-5}
 
-    while [ ! -b "${bootparam_root}" ]; do
+    while [ ! -b "${root_dev}" ]; do
 
         if [ "${elapsed}" -ge "${timeout}" ]; then
             return 1
@@ -65,6 +86,7 @@ wait_root_device() {
 }
 
 dmverity_run() {
+    local root_dev
 
     . /usr/share/misc/dm-verity.env
 
@@ -72,10 +94,11 @@ dmverity_run() {
         fatal "dm-verity env not found in u-boot"
     fi
 
-    wait_root_device || fatal "Root device resolution failed"
+    root_dev="$(dmverity_resolve_device)" || fatal "Root device resolution failed"
 
+    wait_root_device "${root_dev}" || fatal "Root device ${root_dev} is not ready"
 
-    verify_slot "${bootparam_root}" || fatal "rootfs slots failed dm-verity verification"
+    verify_slot "${root_dev}" || fatal "rootfs slots failed dm-verity verification"
 
     dmsetup remove rootfs >/dev/null 2>&1
 
@@ -83,8 +106,8 @@ dmverity_run() {
         --data-block-size="${DATA_BLOCK_SIZE}" \
         --hash-offset="${DATA_SIZE}" \
         create rootfs \
-        "${bootparam_root}" \
-        "${bootparam_root}" \
+        "${root_dev}" \
+        "${root_dev}" \
         "${ROOT_HASH}" || fatal "dm-verity setup failed"
 
     mount \
