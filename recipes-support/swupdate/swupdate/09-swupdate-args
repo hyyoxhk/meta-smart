@@ -1,35 +1,11 @@
-root_dev=`findmnt / -o source -n`
-root_current=${root_dev#\/dev/}
-disk=`echo /sys/block/*/"${root_current}" | cut -d "/" -f 4`
-user_part_num=`ls /sys/block/${disk} | grep "${disk}" | grep -v boot | wc -l`
-root_b_part_num=`expr $user_part_num - 1`
+slot=`otagent -g`
 
-part_prefix=""
-case $disk in
-    mmcblk*)
-        part_prefix="p"
-        ;;
-    sd*)
-        part_prefix=""
-        ;;
-esac
-
-root_b="${disk}${part_prefix}${root_b_part_num}"
-
-if [ $root_current == $root_b ];then
-	selection="-e stable,copy1"
+if [ x$slot == "xB" ]; then
+	selection="-e stable,copyA"
+elif [ x$slot == "xA" ]
+	selection="-e stable,copyB"
 else
-	selection="-e stable,copy2"
-fi
-
-SWUPDATE_EXTRA_ARGS="${selection} -f /etc/swupdate.cfg"
-
-rootfs=`swupdate -g`
-
-if [ $rootfs == '/dev/nvme0n1p2' ]; then
-	selection="-e stable,copy2"
-else
-	selection="-e stable,copy1"
+    selection="--version"
 fi
 
 SWUPDATE_EXTRA_ARGS="${selection} -f /etc/swupdate.cfg"
