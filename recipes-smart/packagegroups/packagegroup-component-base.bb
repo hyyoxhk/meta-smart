@@ -56,7 +56,6 @@ RDEPENDS:${PN} = " \
     gptfdisk \
     e2fsprogs \
     e2fsprogs-resize2fs \
-    resize-helper \
     \
     swupdate \
     u-boot-default-env \
@@ -70,7 +69,6 @@ RDEPENDS:${PN} = " \
     ${@bb.utils.contains('COMBINED_FEATURES', 'wifi', 'hostapd', '', d)} \
     \
     ${@bb.utils.contains('DISTRO_FEATURES', 'nfs', 'nfs-utils-mount ', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-mount-partitions', '', d)} \
     \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio-server', '', d)} \
