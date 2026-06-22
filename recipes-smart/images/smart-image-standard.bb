@@ -28,9 +28,8 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 
 inherit extrausers
 EXTRA_USERS_PARAMS = " \
-    useradd -d /home/smart smart; \
+    useradd -p '' -d /home/smart smart; \
     groupadd wayland; \
-    useradd -p '' smart; \
     usermod -a -G audio smart; \
     usermod -a -G adm smart; \
     usermod -a -G sudo smart; \
