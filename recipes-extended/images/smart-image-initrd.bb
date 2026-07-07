@@ -26,12 +26,18 @@ PACKAGE_INSTALL = " \
     initramfs-framework-base \
     initramfs-module-dmverity \
     initramfs-module-overlayroot \
+    initramfs-module-nfsrootfs \
     initramfs-module-udev \
     init-setup \
     init-install \
     init-resize \
     coreutils \
     dosfstools \
+    util-linux-mount \
+    nfs-utils-mount \
+    lvm2-udevrules \
+    cryptsetup \
+    parted \
 "
 
 do_image[depends] += "${DM_VERITY_IMAGE}:do_image_${@d.getVar('DM_VERITY_IMAGE_TYPE').replace('-', '_')}"

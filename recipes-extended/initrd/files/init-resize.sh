@@ -7,6 +7,8 @@ RESIZE_MARKER=".ramdisk-resize-done"
 RESIZE_MOUNT="/run/resize-datafs"
 
 resize_enabled() {
+    [ "${bootparam_root}" = "/dev/nfs" ] && return 1
+
     [ "$(whoami)" = "root" ] || fatal "resize: must run as root"
 
     for tool in sgdisk parted partprobe resize2fs e2fsck realpath lsblk blkid awk sed sort tail; do
