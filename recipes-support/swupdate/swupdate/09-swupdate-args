@@ -1,11 +1,15 @@
-slot=`otagent -g`
+if command -v otagent >/dev/null 2>&1; then
+    slot=$(otagent -g)
+else
+    slot=""
+fi
 
 if [ x$slot == "xB" ]; then
 	selection="-e stable,copyA"
-elif [ x$slot == "xA" ]
+elif [ x$slot == "xA" ]; then
 	selection="-e stable,copyB"
 else
-    selection="--version"
+	selection="--version"
 fi
 
 SWUPDATE_EXTRA_ARGS="${selection} -f /etc/swupdate.cfg"
