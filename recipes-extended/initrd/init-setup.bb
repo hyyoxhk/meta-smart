@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://${SMARTBASE}/COPYING.MIT;md5=175118499ff863b5f1bd66a0
 
 SRC_URI = "file://init-setup.sh"
 
-RDEPENDS:${PN} = "initramfs-framework-base udev-extraconf"
+RDEPENDS:${PN} = "initramfs-framework-base"
 
 inherit allarch
 
