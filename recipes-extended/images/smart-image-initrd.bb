@@ -38,6 +38,8 @@ PACKAGE_INSTALL = " \
     lvm2-udevrules \
     cryptsetup \
     parted \
+    gptfdisk \
+    e2fsprogs \
 "
 
 do_image[depends] += "${DM_VERITY_IMAGE}:do_image_${@d.getVar('DM_VERITY_IMAGE_TYPE').replace('-', '_')}"
