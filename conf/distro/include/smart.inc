@@ -87,6 +87,7 @@ DISTRO_EXTRA_RDEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 
 
 ROOT_HOME = "/root"
 
+INITRAMFS_FSTYPES ?= "cpio.zst"
 INITRAMFS_IMAGE ?= "smart-image-initrd"
 INITRAMFS_SHORTNAME ?= "initrd.img"
 
