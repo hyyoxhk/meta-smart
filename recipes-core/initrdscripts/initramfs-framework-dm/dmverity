@@ -27,17 +27,22 @@ dmverity_resolve_device() {
 }
 
 verify_slot() {
-    local dev="$1"
+    local dev data_size data_block_size root_hash
+    
+    dev="$1"
+    data_size="$2"
+    data_block_size="$3"
+    root_hash="$4"
 
     dmsetup remove verity_test >/dev/null 2>&1
 
     veritysetup \
-        --data-block-size="${DATA_BLOCK_SIZE}" \
-        --hash-offset="${DATA_SIZE}" \
+        --data-block-size="${data_block_size}" \
+        --hash-offset="${data_size}" \
         create verity_test \
         "${dev}" \
         "${dev}" \
-        "${ROOT_HASH}" >/dev/null 2>&1 || return 1
+        "${root_hash}" >/dev/null 2>&1 || return 1
 
     mkdir -p /run/verity-test
 
@@ -53,13 +58,43 @@ verify_slot() {
     dd if=/dev/mapper/verity_test \
         of=/dev/null \
         bs=8M \
-        status=none >/dev/null 2>&1 || { 
+        status=none >/dev/null 2>&1 || {
+            umount /run/verity-test >/dev/null 2>&1
             dmsetup remove verity_test; 
             return 1;
         }
 
     umount /run/verity-test >/dev/null 2>&1
     dmsetup remove verity_test >/dev/null 2>&1
+
+    return 0
+}
+
+mount_verified_rootfs() {
+    local dev data_size data_block_size root_hash
+
+    dev="$1"
+    data_size="$2"
+    data_block_size="$3"
+    root_hash="$4"
+
+    dmsetup remove rootfs >/dev/null 2>&1
+
+    veritysetup \
+        --data-block-size="${data_block_size}" \
+        --hash-offset="${data_size}" \
+        create rootfs \
+        "${dev}" \
+        "${dev}" \
+        "${root_hash}" || return 1
+
+    mount \
+        -o ro \
+        /dev/mapper/rootfs \
+        "${ROOTFS_DIR}" || {
+        dmsetup remove rootfs >/dev/null 2>&1
+        return 1
+    }
 
     return 0
 }
@@ -100,20 +135,7 @@ dmverity_run() {
 
     wait_root_device "${root_dev}" || fatal "Root device ${root_dev} is not ready"
 
-    verify_slot "${root_dev}" || fatal "rootfs slots failed dm-verity verification"
+    verify_slot "${root_dev}" "${DATA_SIZE}" "${DATA_BLOCK_SIZE}" "${ROOT_HASH}" || fatal "${root_dev} failed dm-verity verification"
 
-    dmsetup remove rootfs >/dev/null 2>&1
-
-    veritysetup \
-        --data-block-size="${DATA_BLOCK_SIZE}" \
-        --hash-offset="${DATA_SIZE}" \
-        create rootfs \
-        "${root_dev}" \
-        "${root_dev}" \
-        "${ROOT_HASH}" || fatal "dm-verity setup failed"
-
-    mount \
-        -o ro \
-        /dev/mapper/rootfs \
-        "${ROOTFS_DIR}" || fatal "mount rootfs failed"
+    mount_verified_rootfs "${root_dev}" "${DATA_SIZE}" "${DATA_BLOCK_SIZE}" "${ROOT_HASH}" || fatal "${root_dev} passed verification but mount failed"
 }
