@@ -98,3 +98,5 @@ IMAGE_BOOT_FILES += " \
 DM_VERITY_IMAGE ?= "smart-image-standard"
 DM_VERITY_IMAGE_TYPE ?= "squashfs-zst"
 IMAGE_CLASSES += "dm-verity-img"
+DM_VERITY_IMAGE_DATA_BLOCK_SIZE = "4096"
+STAGING_VERITY_DIR = "${DEPLOY_DIR_IMAGE}"
