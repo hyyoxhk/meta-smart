@@ -6,6 +6,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += " \
+    file://0001-build-add-pkg-config-metadata-for-libswupdate.patch \
     file://09-swupdate-args \
     file://10-mongoose-args \
     file://swupdate.cfg \
