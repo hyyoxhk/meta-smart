@@ -20,9 +20,4 @@ DEPENDS = "json-c"
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[write] = "-Denable-write=true,-Denable-write=false"
 
-do_install:append() {
-	install -d ${D}${sysconfdir}/eeprom
-	install -m 0644 ${S}/layout/*.json ${D}${sysconfdir}/eeprom/
-}
-
 FILES:${PN} += "${sysconfdir}/eeprom"
