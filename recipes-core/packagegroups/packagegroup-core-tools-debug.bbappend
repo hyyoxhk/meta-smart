@@ -10,5 +10,4 @@ RDEPENDS:${PN} += " \
     alsa-utils-alsamixer \
     minicom \
     fio \
-    iozone3 \
 "
